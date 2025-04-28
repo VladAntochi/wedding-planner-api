@@ -1,4 +1,4 @@
-import mysql from "mysql2";
+import mysql from "mysql2/promise";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -10,14 +10,15 @@ if (!mysqlUrl) {
   process.exit(1);
 }
 
-const db = mysql.createConnection(mysqlUrl);
+// Create a connection pool but still name it db
+const db = mysql.createPool(mysqlUrl);
 
-db.connect((err) => {
-  if (err) {
+// Simple test to verify the connection
+db.query("SELECT 1")
+  .then(() => console.log("MySQL connected"))
+  .catch((err) => {
     console.error("Error connecting to MySQL:", err);
-    throw err;
-  }
-  console.log("MySQL connected");
-});
+    process.exit(1);
+  });
 
 export default db;
